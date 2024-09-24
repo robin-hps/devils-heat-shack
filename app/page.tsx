@@ -4,12 +4,45 @@ import { getAllProducts } from '../lib/shopify';
 import { useEffect, useState } from 'react';
 import styles from './HomePage.module.css';
 
+// Define the types for the product data
+type Image = {
+    node: {
+        url: string;
+        altText: string | null;
+    };
+};
+
+type ProductNode = {
+    id: string;
+    title: string;
+    description: string;
+    images: {
+        edges: Image[];
+    };
+};
+
+type ProductEdge = {
+    node: ProductNode;
+};
+
+type ProductsData = {
+    body: {
+        data: {
+            products: {
+                edges: ProductEdge[];
+            };
+        };
+    };
+    status: number;
+    error?: string;
+};
+
 export default function HomePage() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<ProductEdge[]>([]);
 
     useEffect(() => {
         async function fetchProducts() {
-            const response = await getAllProducts();
+            const response: ProductsData = await getAllProducts();
             if (response.status === 200) {
                 console.log('Products Data:', response.body.data.products.edges);
                 setProducts(response.body.data.products.edges);
