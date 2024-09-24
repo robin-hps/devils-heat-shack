@@ -1,6 +1,12 @@
-export async function shopifyFetch({ query, variables }) {
-    const endpoint = process.env.SHOPIFY_STORE_DOMAIN;
-    const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+
+import {
+    ShopifyFetchParams,
+    ShopifyFetchResponse,
+} from './shopifyTypes';
+
+async function shopifyFetch({ query }: ShopifyFetchParams): Promise<ShopifyFetchResponse> {
+    const endpoint = process.env.SHOPIFY_STORE_DOMAIN ?? '';
+    const key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? '';
 
     console.log('Endpoint:', endpoint);
     console.log('Access Token:', key);
@@ -13,7 +19,7 @@ export async function shopifyFetch({ query, variables }) {
                 'Content-Type': 'application/json',
                 'X-Shopify-Storefront-Access-Token': key
             },
-            body: { query, variables } && JSON.stringify({ query, variables })
+            body: JSON.stringify({ query }),
         });
 
         return {
@@ -29,7 +35,7 @@ export async function shopifyFetch({ query, variables }) {
     }
 }
 
-export async function getAllProducts() {
+export async function getAllProducts(): Promise<ShopifyFetchResponse> {
     return shopifyFetch({
         query: `{
       products(sortKey: TITLE, first: 100) {
@@ -49,6 +55,6 @@ export async function getAllProducts() {
           }
         }
       }
-    }`
+    }`,
     });
 }
